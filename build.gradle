@@ -1,0 +1,27 @@
+plugins {
+    id'application'
+    id'com.github.johnrengelman.shadow' version '5.2.0'
+}
+
+mainClassName = 'b1pod.Bot'
+
+version '1.0'
+def jdaVersion = '4.3.0_307'
+
+sourceCompatibility = targetCompatibility = 1.11
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://m2.dv8tion.net/releases"
+    }
+}
+
+dependencies {
+    implementation("net.dv8tion:JDA:$jdaVersion")
+    // https://mvnrepository.com/artifact/org.json/json
+    implementation group: 'org.json', name: 'json', version: '20090211'
+    implementation("ch.qos.logback:logback-classic:1.2.3")
+}
+
+compileJava.options.encoding = 'UTF-8'
