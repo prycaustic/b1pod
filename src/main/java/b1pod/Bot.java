@@ -1,6 +1,7 @@
 package b1pod;
 
 import b1pod.Commands.*;
+import b1pod.Commands.UserTags;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
