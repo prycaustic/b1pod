@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static b1pod.Bot.getEmote;
+
 public class Music extends ListenerAdapter
 {
     private final AudioPlayerManager playerManager;
@@ -89,7 +91,7 @@ public class Music extends ListenerAdapter
                 case "pause":
                     boolean isPaused = getGuildAudioPlayer(event.getGuild()).player.isPaused();
                     getGuildAudioPlayer(event.getGuild()).player.setPaused(!isPaused);
-                    event.getMessage().addReaction("\uD83D\uDD95").queue();
+                    event.getMessage().addReaction(getEmote("finger")).queue();
             }
         }
         catch (Exception e)
@@ -182,7 +184,7 @@ public class Music extends ListenerAdapter
         if (audioManager.isConnected())
         {
             audioManager.closeAudioConnection();
-            message.addReaction("\uD83D\uDC4B").queue();
+            message.addReaction(getEmote("wave")).queue();
         }
     }
 
