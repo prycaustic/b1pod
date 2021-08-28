@@ -14,19 +14,19 @@ public class Bot
         JDA jda = JDABuilder.createDefault(args[0])
                 .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_VOICE_STATES)
                 .addEventListeners(
-                        new PingCommand(),
+                        /*new PingCommand(),
                         new FilmCommand(),
                         new HypeManListener(),
                         new NASACommands(),
                         new Kanye(),
                         new DumbStuff(),
                         new UserTags(),
-                        new WikipediaSearch(),
+                        new WikipediaSearch(),*/
                         new UserTags2(),
-                        new Music(args[1]),
+                        //new Music(args[1]),
                         new Shutdown()
                 )
-                //.setActivity(Activity.playing("CURRENTLY TESTING...COMMANDS MIGHT NOT WORK"))
+                .setActivity(Activity.playing("CURRENTLY TESTING...COMMANDS MIGHT NOT WORK"))
                 .build().awaitReady();
     }
 }
