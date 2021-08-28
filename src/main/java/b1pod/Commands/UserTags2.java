@@ -26,78 +26,74 @@ public class UserTags2 extends ListenerAdapter
         if (event.getAuthor().isBot()) return;
         String content = event.getMessage().getContentRaw();
 
-        if (content.startsWith("/tag"))
-        {
-            String[] args = content.split(" (?=([^\"]*\"[^\"]*\")*[^\"]*$)");
-            for (int i = 0; i < args.length; i++)
-            {
-                args[i] = args[i].replace("\"", "");
-            }
-
-            if (tagsEnabled(event.getGuild()))
-            {
-                try
-                {
-                    switch (args[1])
-                    {
-                        case "add":
-                            addTag(event.getMessage(), args[2], args[3]);
-                            break;
-                        case "remove":
-                            removeTag(args[2]);
-                            break;
-                    }
-                }
-                catch (IndexOutOfBoundsException e)
-                {
-                    event.getMessage().reply("Incorrect syntax, use `/tag help` for more info.")
-                            .mentionRepliedUser(false).queue();
-                }
-            }
-            else if (args[1].equals("enable"))
-            {
-                enableTags(event.getMessage());
-            }
-            else
-            {
-                event.getMessage()
-                        .reply("Tags are not enabled in this server. Use `/tag enable` to enable.")
-                        .mentionRepliedUser(false).queue();
-            }
-        }
-        else
-        {
-            if (tagsEnabled(event.getGuild()))
-            {
-                String tag = searchForTag(event.getChannel(), content);
-
-                if (tag != null)
-                    event.getChannel().sendMessage(tag).queue();
-            }
-        }
-    }
-
-    private void enableTags(Message message)
-    {
         try
         {
             Connection conn = connect();
 
-            if (conn != null)
+            if (content.startsWith("/tag"))
             {
-                String query = "CREATE TABLE `test_schema`.`g" + message.getGuild().getId() + "` (\n" +
-                        "  `id` INT NOT NULL AUTO_INCREMENT,\n" +
-                        "  `name` VARCHAR(99) NOT NULL,\n" +
-                        "  `value` VARCHAR(200) NOT NULL,\n" +
-                        "  PRIMARY KEY (`id`));\n";
+                String[] args = content.split(" (?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+                for (int i = 0; i < args.length; i++)
+                {
+                    args[i] = args[i].replace("\"", "");
+                }
 
-                conn.prepareStatement(query).executeUpdate();
-                message.addReaction(getEmote("success")).queue();
+                try
+                {
+                    if (tagsEnabled(conn, event.getGuild().getId()))
+                    {
+                        try
+                        {
+                            switch (args[1])
+                            {
+                                case "add":
+                                    addTag(conn, event.getGuild().getId(), args[2], args[3]);
+                                    break;
+                                case "remove":
+                                    removeTag(conn, event.getGuild().getId(), args[2]);
+                                    break;
+                            }
+                        }
+                        catch (IndexOutOfBoundsException e)
+                        {
+                            event.getMessage().reply("Incorrect syntax, use `/tag help` for more info.")
+                                    .mentionRepliedUser(false).queue();
+                        }
+                    }
+                    else if (args[1].equals("enable"))
+                    {
+                        enableTags(conn, event.getMessage());
+                    }
+                    else
+                    {
+                        event.getMessage()
+                                .reply("Tags are not enabled in this server. Use `/tag enable` to enable.")
+                                .mentionRepliedUser(false).queue();
+                    }
+
+                    conn.close();
+                }
+                catch (SQLException e)
+                {
+                    event.getMessage().addReaction(getEmote("failure")).queue();
+                    e.printStackTrace();
+                }
             }
+            else
+            {
+                if (tagsEnabled(conn, event.getGuild().getId()))
+                {
+                    String tag = getTag(conn, event.getGuild().getId(), content);
+
+                    if (tag != null)
+                        event.getChannel().sendMessage(tag).queue();
+                }
+            }
+
+            conn.close();
         }
         catch (SQLException e)
         {
-            message.addReaction(getEmote("failure")).queue();
             e.printStackTrace();
         }
     }
@@ -107,92 +103,57 @@ public class UserTags2 extends ListenerAdapter
         return DriverManager.getConnection("jdbc:mysql://localhost:3306/test_schema", "root", MYSQL_PWD);
     }
 
-    private ResultSet getSearchResult(Connection conn, String table, String message) throws SQLException
+    private ResultSet retrieve(Connection conn, String query) throws SQLException
     {
-        String query = "SELECT * FROM " + table + " WHERE name=\"" + message + "\"";
-
         return conn.prepareStatement(query).executeQuery();
     }
 
-    private void addTag(Message message, String name, String tag)
+    private void update(Connection conn, String query) throws SQLException
     {
-        try
-        {
-            Connection conn = connect();
-
-            if (conn != null)
-            {
-                if (searchForTag(message.getTextChannel(), name) == null)
-                {
-                    String query = "INSERT INTO g" + message.getGuild().getId() + " (id, name, value)" +
-                            "\nVALUES (NULL, \"" + name + "\", \"" + tag + "\");";
-
-                    conn.prepareStatement(query).executeUpdate();
-                    message.addReaction(getEmote("success")).queue();
-                }
-                else
-                {
-                    message.reply("Tag already exists. Please delete the original first.")
-                            .mentionRepliedUser(false).queue();
-                }
-            }
-        }
-        catch (SQLException e)
-        {
-            message.addReaction(getEmote("failure")).queue();
-            e.printStackTrace();
-        }
+        conn.prepareStatement(query).executeUpdate();
     }
 
-    private void removeTag(String name)
+    private void addTag(Connection conn, String guildId, String name, String value) throws SQLException
     {
-        System.out.println("removing...");
+        String query = "INSERT INTO g" + guildId + " (id, name, value)" +
+            "\nVALUES (NULL, \"" + name + "\", \"" + value + "\");";
+
+        update(conn, query);
     }
 
-    private String searchForTag(TextChannel channel, String content)
+    private void removeTag(Connection conn, String guildId, String name) throws SQLException
     {
-        Connection conn = null;
+        String query = "SELECT * FROM g" + guildId + " WHERE name=\"" + name + "\"";
 
-        try
-        {
-            conn = connect();
-        }
-        catch (SQLException e)
-        {
-            System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
-        }
+        update(conn, query);
+    }
 
-        if (conn != null)
-        {
-            try
-            {
-                ResultSet result = getSearchResult(conn, "g" + channel.getGuild().getId(), content);
+    private void enableTags(Connection conn, Message message) throws SQLException
+    {
+        String query = "CREATE TABLE `test_schema`.`g" + message.getGuild().getId() + "` (\n" +
+                "  `id` INT NOT NULL AUTO_INCREMENT,\n" +
+                "  `name` VARCHAR(99) NOT NULL,\n" +
+                "  `value` VARCHAR(200) NOT NULL,\n" +
+                "  PRIMARY KEY (`id`));\n";
 
-                if (result.next())
-                    return result.getString("value");
-            }
-            catch (SQLException ignored) { }
-        }
+        update(conn, query);
+    }
+
+    private boolean tagsEnabled(Connection conn, String guildId) throws SQLException
+    {
+        ResultSet result = retrieve(conn, "SELECT * FROM g" + guildId);
+
+        return result.next();
+    }
+
+    private String getTag(Connection conn, String guildId, String name) throws SQLException
+    {
+        String query = "SELECT * FROM g" + guildId + " WHERE name=\"" + name + "\"";
+        ResultSet result = retrieve(conn, query);
+
+        if (result.next())
+            return result.getString("value");
+
         return null;
-    }
-
-    private boolean tagsEnabled(Guild guild)
-    {
-        try
-        {
-            Connection conn = connect();
-
-            if (conn != null)
-            {
-                DatabaseMetaData meta = conn.getMetaData();
-                ResultSet result = meta.getTables(null, null, "g" + guild.getId(), null);
-
-                if (result.next())
-                    return true;
-            }
-        }
-        catch (SQLException ignored) { }
-
-        return false;
     }
 }
