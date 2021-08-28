@@ -94,6 +94,7 @@ public class Music extends ListenerAdapter
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             event.getMessage().reply("You must be in a voice channel to use this command!").mentionRepliedUser(false).queue();
         }
 
