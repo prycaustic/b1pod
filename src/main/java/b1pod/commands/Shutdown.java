@@ -1,4 +1,4 @@
-package b1pod.Commands;
+package b1pod.commands;
 
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;

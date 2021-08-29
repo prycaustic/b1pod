@@ -1,7 +1,7 @@
-package b1pod.Commands.PingPong;
+package b1pod.commands.PingPong;
 
-import b1pod.Commands.core.ExecutionResult;
-import b1pod.Commands.core.Command;
+import b1pod.core.ExecutionResult;
+import b1pod.core.Command;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.Arrays;

@@ -1,14 +1,14 @@
-package b1pod.Commands.UserTags3;
+package b1pod.commands.UserTags3;
 
-import b1pod.Commands.core.Command;
-import b1pod.Commands.core.ExecutionResult;
+import b1pod.core.Command;
+import b1pod.core.ExecutionResult;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 
 import static b1pod.Bot.getPrefix;
-import static b1pod.Commands.UserTags3.UserTags3.*;
+import static b1pod.commands.UserTags3.UserTags3.*;
 
 public class TagAdd extends Command
 {

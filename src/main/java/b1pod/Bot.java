@@ -1,10 +1,11 @@
 package b1pod;
 
-import b1pod.Commands.*;
-import b1pod.Commands.Music.Music;
-import b1pod.Commands.PingPong.Ping;
-import b1pod.Commands.UserTags3.UserTags3;
-import b1pod.Commands.core.CommandHandler;
+import b1pod.commands.*;
+import b1pod.commands.Music.Music;
+import b1pod.commands.PingPong.Ping;
+import b1pod.commands.UserTags3.TagListener;
+import b1pod.commands.UserTags3.UserTags3;
+import b1pod.core.CommandHandler;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
@@ -32,6 +33,7 @@ public class Bot
                         new DumbStuff(),
                         new WikipediaSearch(),
                         new Music(),
+                        new TagListener(),
                         new Shutdown()
                 );
 

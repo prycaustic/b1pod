@@ -1,4 +1,4 @@
-package b1pod.Commands.UserTags3;
+package b1pod.commands.UserTags3;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
 
-import static b1pod.Commands.UserTags3.UserTags3.*;
+import static b1pod.commands.UserTags3.UserTags3.*;
 
 public class TagListener extends ListenerAdapter
 {

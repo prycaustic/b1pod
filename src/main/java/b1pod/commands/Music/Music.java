@@ -1,4 +1,4 @@
-package b1pod.Commands.Music;
+package b1pod.commands.Music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;

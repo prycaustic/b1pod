@@ -1,8 +1,10 @@
-package b1pod.Commands.UserTags3;
+package b1pod.commands.UserTags3;
 
-import b1pod.Commands.core.Command;
-import b1pod.Commands.core.ExecutionResult;
+import b1pod.core.Command;
+import b1pod.core.ExecutionResult;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -49,6 +51,9 @@ public class UserTags3 extends Command
     // Command Utilities
     public static Connection connect() throws SQLException
     {
+        Logger logger = LoggerFactory.getLogger(UserTags3.class);
+        logger.info("Logging into mariadb.");
+
         return DriverManager.getConnection("jdbc:mariadb://localhost/" + DB_NAME, "root", getSQLPassword());
     }
 
