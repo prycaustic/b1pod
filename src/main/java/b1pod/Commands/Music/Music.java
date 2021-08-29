@@ -25,18 +25,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static b1pod.Bot.getEmote;
+import static b1pod.Bot.*;
 
 public class Music extends ListenerAdapter
 {
     private final AudioPlayerManager playerManager;
     private final Map<Long, GuildMusicManager> musicManagers;
-    private final String prefix = "b-";
-    private static String API_KEY = "";
 
     public Music(final String apiKey) {
         this.musicManagers = new HashMap<>();
-        API_KEY = apiKey;
 
         this.playerManager = new DefaultAudioPlayerManager();
         AudioSourceManagers.registerRemoteSources(playerManager);
@@ -58,7 +55,7 @@ public class Music extends ListenerAdapter
 
         try
         {
-            switch (args[0].replace(prefix, ""))
+            switch (args[0].replace(getPrefix(), ""))
             {
                 case "play":
                     if (!inVoice) throw new Exception();
@@ -247,7 +244,7 @@ public class Music extends ListenerAdapter
         {
             URIBuilder URI = new URIBuilder("https://www.googleapis.com/youtube/v3/search")
                     .addParameter("part", "snippet")
-                    .addParameter("key", API_KEY)
+                    .addParameter("key", getYouTubeApiKey())
                     .addParameter("q", query);
 
             HttpRequest request = HttpRequest.newBuilder()
