@@ -1,16 +1,15 @@
 package b1pod.Commands.core;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import static b1pod.Bot.*;
 
@@ -19,12 +18,12 @@ public abstract class Command extends ListenerAdapter
     protected String name = "null";
     protected String syntax = "null";
     protected String description = "No description available.";
-    protected List<String> aliases = new ArrayList<>();
+    protected List<String> triggers = new ArrayList<>();
     protected Command[] children = null;
     protected Command parent = null;
     protected boolean guildOnly = false;
 
-    protected abstract ExecutionResult execute(String[] args);
+    protected abstract ExecutionResult execute(MessageReceivedEvent event, String[] args) throws Exception;
 
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event)
@@ -34,22 +33,29 @@ public abstract class Command extends ListenerAdapter
         if (!content.startsWith(getPrefix())) return;
         String[] args = parseInput(content);
 
-        if (guildOnly && !event.isFromGuild())
-            parseResult(message, new ExecutionResult("warning", "This command cannot be used in private messages."));
-        else if (args.length == 1)
+        try
         {
-            if (aliases.contains(args[0]))
-                parseResult(message, execute(args));
+            if (guildOnly && !event.isFromGuild())
+                parseResult(message, new ExecutionResult("warning", "This command cannot be used in private messages."));
+            else if (args.length == 1)
+            {
+                if (triggers.contains(args[0]))
+                    parseResult(message, execute(event, args));
+            } else if (args.length > 1 && !args[1].equalsIgnoreCase("help"))
+            {
+                if (parent == null) return;
+                if (parent.getTriggers().contains(args[0]) && triggers.contains(args[1]))
+                    parseResult(message, execute(event, args));
+            } else if (args.length > 1 && triggers.contains(args[0]))
+            {
+                if (args[1].equalsIgnoreCase("help"))
+                    parseResult(message, getHelp());
+            }
         }
-        else if (args.length > 1 && !args[1].equalsIgnoreCase("help"))
+        catch (Exception e)
         {
-            if (parent == null) return;
-            if (parent.getAliases().contains(args[0]) && aliases.contains(args[1]))
-                parseResult(message, execute(args));
-        }
-        else if (args.length > 1 && args[1].equalsIgnoreCase("help"))
-        {
-            parseResult(message, getHelp());
+            e.printStackTrace();
+            parseResult(message, new ExecutionResult("failure", "Something went wrong."));
         }
     }
 
@@ -97,13 +103,14 @@ public abstract class Command extends ListenerAdapter
         return children;
     }
 
-    public List<String> getAliases()
+    public List<String> getTriggers()
     {
-        return aliases;
+        return triggers;
     }
 
     public ExecutionResult getHelp()
     {
+        if (parent != null) return null;
         EmbedBuilder helpEmbed = new EmbedBuilder()
                 .setTitle(this.name)
                 .setDescription(this.description)
