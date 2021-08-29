@@ -1,4 +1,4 @@
-package b1pod.Commands.misc;
+package b1pod.Commands.core;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
 

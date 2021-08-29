@@ -1,9 +1,9 @@
 package b1pod;
 
 import b1pod.Commands.*;
-import b1pod.Commands.Music.Music;
+import b1pod.Commands.PingPong.Ping;
+import b1pod.Commands.core.CommandHandler;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 public class Bot
@@ -20,23 +20,26 @@ public class Bot
         PREFIX = "b-";
         EMBED_COLOR = 0xFFCB77;
 
-        JDABuilder.createDefault(args[0])
+        JDABuilder jda = JDABuilder.createDefault(args[0])
                 .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_VOICE_STATES)
                 .addEventListeners(
-                        new PingCommand(),
-                        new FilmCommand(),
+                        /*new FilmCommand(),
                         new HypeManListener(),
                         new NASACommands(),
                         new Kanye(),
                         new DumbStuff(),
-                        new UserTags(),
                         new WikipediaSearch(),
                         new Music(),
-                        new UserTags2(),
+                        new UserTags2(),*/
                         new Shutdown()
-                )
-                .setActivity(Activity.playing("CURRENTLY TESTING...COMMANDS MIGHT NOT WORK"))
-                .build().awaitReady();
+                );
+
+        new CommandHandler(jda,
+                new Ping());
+
+        //jda.setActivity(Activity.playing("CURRENTLY TESTING...COMMANDS MIGHT NOT WORK"));
+
+        jda.build();
     }
 
     public static String getEmote(String name)
