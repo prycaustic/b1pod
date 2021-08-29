@@ -194,7 +194,7 @@ public class Music extends ListenerAdapter
                 .setTitle("Music Queue")
                 .setDescription("There are currently " + musicManager.scheduler.getQueue().size() + " tracks queued.")
                 .addField("Playing", currentTrackValue, false)
-                .setColor(0xFFCB77);
+                .setColor(getEmbedColor());
 
         int i = 1;
         for (AudioTrack track : musicManager.scheduler.getQueue())

@@ -11,12 +11,14 @@ public class Bot
     private static String YOUTUBE_API_KEY;
     private static String MYSQL_PASSWORD;
     private static String PREFIX;
+    private static int EMBED_COLOR;
 
     public static void main(String[] args) throws Exception
     {
         YOUTUBE_API_KEY = args[1];
         MYSQL_PASSWORD = args[2];
         PREFIX = "b-";
+        EMBED_COLOR = 0xFFCB77;
 
         JDABuilder.createDefault(args[0])
                 .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_VOICE_STATES)
@@ -69,5 +71,10 @@ public class Bot
     public static String getSQLPassword()
     {
         return MYSQL_PASSWORD;
+    }
+
+    public static int getEmbedColor()
+    {
+        return EMBED_COLOR;
     }
 }
