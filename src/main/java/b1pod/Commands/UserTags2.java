@@ -1,14 +1,13 @@
 package b1pod.Commands;
 
-import net.dv8tion.jda.api.entities.Guild;
+import b1pod.Commands.misc.ExecutionResult;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
-import java.util.Arrays;
 
 import static b1pod.Bot.*;
 
@@ -42,10 +41,13 @@ public class UserTags2 extends ListenerAdapter
                         switch (args[1])
                         {
                             case "add":
-                                execute(event.getMessage(), addTag(conn, guildId, args[2], args[3]));
+                                execute(event.getMessage(), addTag(conn, guildId, args));
                                 break;
                             case "remove":
                                 execute(event.getMessage(), removeTag(conn, guildId, args[2]));
+                                break;
+                            case "list":
+                                execute(event.getMessage(), listTags(conn, guildId, event.getMessage()));
                                 break;
                         }
                     }
@@ -90,11 +92,17 @@ public class UserTags2 extends ListenerAdapter
         }
     }
 
-    private void execute(Message message, String[] result)
+    private void execute(Message message, ExecutionResult result)
     {
-        message.addReaction(getEmote(result[0])).queue();
-        if (result[1] != null)
-            message.reply(result[1]).mentionRepliedUser(false).queue();
+        String emoji = result.getEmoji(), reason = result.getReason();
+        MessageEmbed embed = result.getEmbed();
+
+        if (emoji != null && reason == null)
+            message.addReaction(getEmote(emoji)).queue();
+        if (emoji != null && reason != null)
+            message.reply(getEmote(emoji) + " " + reason).mentionRepliedUser(false).queue();
+        if (result.getEmbed() != null)
+            message.replyEmbeds(embed).mentionRepliedUser(false).queue();
     }
 
     private Connection connect() throws SQLException
@@ -112,28 +120,31 @@ public class UserTags2 extends ListenerAdapter
         conn.prepareStatement(query).executeUpdate();
     }
 
-    private String[] addTag(Connection conn, String guildId, String name, String value) throws SQLException
+    private ExecutionResult addTag(Connection conn, String guildId, String[] args) throws SQLException
     {
-        if (getTag(conn, guildId, name) != null) return new String[] {"failure", "Tag already exists."};
+        if (args.length > 4) return new ExecutionResult("warning", "Incorrect syntax, use `" + getPrefix() + "tag help` for more info.");
+        String name = args[2], value = args[3];
+
+        if (getTag(conn, guildId, name) != null) return new ExecutionResult("warning", " Tag already exists.");
         String query = "INSERT INTO g" + guildId + " (name, value)" +
                 "\nVALUES ('" + name + "', '" + value + "');";
 
         update(conn, query);
-        return new String[] {"success", null};
+        return new ExecutionResult("success");
     }
 
-    private String[] removeTag(Connection conn, String guildId, String name) throws SQLException
+    private ExecutionResult removeTag(Connection conn, String guildId, String name) throws SQLException
     {
-        if (getTag(conn, guildId, name) == null) return new String[] {"failure", "Tag does not exist."};
+        if (getTag(conn, guildId, name) == null) return new ExecutionResult("failure", "Tag does not exist.");
         String query = "DELETE FROM `" + DB_NAME + "`.`g" + guildId + "` WHERE (`name` = '" + name + "');";
 
         update(conn, query);
-        return new String[] {"success", null};
+        return new ExecutionResult("success");
     }
 
-    private String[] enableTags(Connection conn, String guildId) throws SQLException
+    private ExecutionResult enableTags(Connection conn, String guildId) throws SQLException
     {
-        if (tagsEnabled(conn, guildId)) return new String[] {"failure", "Tags already enabled."};
+        if (tagsEnabled(conn, guildId)) return new ExecutionResult("failure", "Tags already enabled.");
         String query = "CREATE TABLE `" + DB_NAME + "`.`g" + guildId + "` (\n" +
                 "  `name` VARCHAR(99) NOT NULL,\n" +
                 "  `value` VARCHAR(200) NOT NULL,\n" +
@@ -141,7 +152,7 @@ public class UserTags2 extends ListenerAdapter
                 "  UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE);";
 
         update(conn, query);
-        return new String[] {"success", null};
+        return new ExecutionResult("success");
     }
 
     private boolean tagsEnabled(Connection conn, String guildId) throws SQLException
@@ -149,6 +160,22 @@ public class UserTags2 extends ListenerAdapter
         ResultSet result = conn.getMetaData().getTables(null, null, "g" + guildId, null);
 
         return result.next();
+    }
+
+    private ExecutionResult listTags(Connection conn, String guildId, Message message) throws SQLException
+    {
+        if (!tagsEnabled(conn, guildId)) return new ExecutionResult("failure", "No tags found.");
+        String query = "SELECT * FROM g" + guildId;
+        ResultSet result = retrieve(conn, query);
+        StringBuilder list = new StringBuilder("Tags: ");
+
+        while (result.next())
+        {
+            list.append("\n").append(result.getString("name"));
+        }
+
+        message.reply(list.toString()).mentionRepliedUser(false).queue();
+        return new ExecutionResult();
     }
 
     private String getTag(Connection conn, String guildId, String name) throws SQLException
