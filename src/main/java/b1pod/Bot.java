@@ -1,9 +1,14 @@
 package b1pod;
 
 import b1pod.Commands.*;
+import b1pod.Commands.Music.Music;
 import b1pod.Commands.PingPong.Ping;
+import b1pod.Commands.UserTags2.UserTags2;
+import b1pod.Commands.UserTags3.UserTags3;
 import b1pod.Commands.core.CommandHandler;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 public class Bot
@@ -23,19 +28,19 @@ public class Bot
         JDABuilder jda = JDABuilder.createDefault(args[0])
                 .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_VOICE_STATES)
                 .addEventListeners(
-                        /*new FilmCommand(),
+                        new FilmCommand(),
                         new HypeManListener(),
                         new NASACommands(),
                         new Kanye(),
                         new DumbStuff(),
                         new WikipediaSearch(),
                         new Music(),
-                        new UserTags2(),*/
                         new Shutdown()
                 );
 
         new CommandHandler(jda,
-                new Ping());
+                new Ping(),
+                new UserTags3());
 
         //jda.setActivity(Activity.playing("CURRENTLY TESTING...COMMANDS MIGHT NOT WORK"));
 
