@@ -8,8 +8,6 @@ public class ExecutionResult
     private String Reason = null;
     private MessageEmbed Embed = null;
 
-    public ExecutionResult() {}
-
     public ExecutionResult(MessageEmbed embed)
     {
         this.Embed = embed;

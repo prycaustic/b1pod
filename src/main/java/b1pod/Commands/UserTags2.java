@@ -1,6 +1,7 @@
 package b1pod.Commands;
 
 import b1pod.Commands.misc.ExecutionResult;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -47,7 +48,10 @@ public class UserTags2 extends ListenerAdapter
                                 execute(event.getMessage(), removeTag(conn, guildId, args[2]));
                                 break;
                             case "list":
-                                execute(event.getMessage(), listTags(conn, guildId, event.getMessage()));
+                                execute(event.getMessage(), listTags(conn, guildId));
+                                break;
+                            case "help":
+                                execute(event.getMessage(), displayHelp());
                                 break;
                         }
                     }
@@ -120,6 +124,19 @@ public class UserTags2 extends ListenerAdapter
         conn.prepareStatement(query).executeUpdate();
     }
 
+    private ExecutionResult enableTags(Connection conn, String guildId) throws SQLException
+    {
+        if (tagsEnabled(conn, guildId)) return new ExecutionResult("failure", "Tags already enabled.");
+        String query = "CREATE TABLE `" + DB_NAME + "`.`g" + guildId + "` (\n" +
+                "  `name` VARCHAR(99) NOT NULL,\n" +
+                "  `value` VARCHAR(200) NOT NULL,\n" +
+                "  PRIMARY KEY (`name`),\n" +
+                "  UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE);";
+
+        update(conn, query);
+        return new ExecutionResult("success");
+    }
+
     private ExecutionResult addTag(Connection conn, String guildId, String[] args) throws SQLException
     {
         if (args.length > 4) return new ExecutionResult("warning", "Incorrect syntax, use `" + getPrefix() + "tag help` for more info.");
@@ -142,17 +159,37 @@ public class UserTags2 extends ListenerAdapter
         return new ExecutionResult("success");
     }
 
-    private ExecutionResult enableTags(Connection conn, String guildId) throws SQLException
+    private ExecutionResult listTags(Connection conn, String guildId) throws SQLException
     {
-        if (tagsEnabled(conn, guildId)) return new ExecutionResult("failure", "Tags already enabled.");
-        String query = "CREATE TABLE `" + DB_NAME + "`.`g" + guildId + "` (\n" +
-                "  `name` VARCHAR(99) NOT NULL,\n" +
-                "  `value` VARCHAR(200) NOT NULL,\n" +
-                "  PRIMARY KEY (`name`),\n" +
-                "  UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE);";
+        if (!tagsEnabled(conn, guildId)) return new ExecutionResult("failure", "No tags found.");
+        String query = "SELECT * FROM g" + guildId;
+        ResultSet result = retrieve(conn, query);
+        EmbedBuilder listEmbed = new EmbedBuilder().setTitle("Tags");
 
-        update(conn, query);
-        return new ExecutionResult("success");
+        while (result.next())
+        {
+            listEmbed.addField(result.getString("name"), result.getString("value"), true);
+        }
+
+        return new ExecutionResult(listEmbed.build());
+    }
+
+    private ExecutionResult displayHelp()
+    {
+        EmbedBuilder helpEmbed = new EmbedBuilder()
+                .setTitle("Tags Help")
+                .setDescription("Create custom tags!")
+                .addField("Add", "``" + getPrefix() + "tag add <name> <value>``" +
+                        "\n Tag names and values with more than one word should be surrounded with quotes.", false)
+                .addField("Remove", "``" + getPrefix() + "tag remove <name>``" +
+                        "\nDeletes the specified tag.", false)
+                .addField("List", "``" + getPrefix() + "tag list``" +
+                        "\nReturns a list of usable tags.", false)
+                .addField("Help", "Shows this help message.", false)
+                .addField("Usage", "Just type the name of a tag into chat.", false)
+                .setColor(getEmbedColor());
+
+        return new ExecutionResult(helpEmbed.build());
     }
 
     private boolean tagsEnabled(Connection conn, String guildId) throws SQLException
@@ -160,22 +197,6 @@ public class UserTags2 extends ListenerAdapter
         ResultSet result = conn.getMetaData().getTables(null, null, "g" + guildId, null);
 
         return result.next();
-    }
-
-    private ExecutionResult listTags(Connection conn, String guildId, Message message) throws SQLException
-    {
-        if (!tagsEnabled(conn, guildId)) return new ExecutionResult("failure", "No tags found.");
-        String query = "SELECT * FROM g" + guildId;
-        ResultSet result = retrieve(conn, query);
-        StringBuilder list = new StringBuilder("Tags: ");
-
-        while (result.next())
-        {
-            list.append("\n").append(result.getString("name"));
-        }
-
-        message.reply(list.toString()).mentionRepliedUser(false).queue();
-        return new ExecutionResult();
     }
 
     private String getTag(Connection conn, String guildId, String name) throws SQLException
