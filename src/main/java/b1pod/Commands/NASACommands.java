@@ -14,7 +14,6 @@ import java.net.http.HttpResponse;
 
 public class NASACommands extends ListenerAdapter
 {
-    private final String API_KEY = "UW5FOx1OWsA3Nw0zggEtytnAUvGqCKTg3c8nqHW9";
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event)
@@ -31,6 +30,7 @@ public class NASACommands extends ListenerAdapter
 
             try
             {
+                String API_KEY = "UW5FOx1OWsA3Nw0zggEtytnAUvGqCKTg3c8nqHW9";
                 switch (args[1])
                 {
                     case "apod":

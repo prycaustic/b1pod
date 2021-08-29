@@ -33,7 +33,7 @@ public class UserTags extends ListenerAdapter
                     try
                     {
                         // Get JSON file
-                        JSONObject json = parseJSONFile("gifs.json");
+                        JSONObject json = parseJSONFile();
                         JSONArray gifArray = new JSONArray();
                         try
                         {
@@ -61,7 +61,7 @@ public class UserTags extends ListenerAdapter
                 {
                     try
                     {
-                        JSONObject tags = parseJSONFile("gifs.json");
+                        JSONObject tags = parseJSONFile();
                         var keys = tags.keys();
                         StringBuilder list = new StringBuilder("List of tags:\n");
 
@@ -80,7 +80,7 @@ public class UserTags extends ListenerAdapter
                 {
                     if (args[2] != null)
                     {
-                        JSONObject tags = parseJSONFile("gifs.json");
+                        JSONObject tags = parseJSONFile();
                         String name = args[2].replace("_", " ");
 
                         if (!tags.isNull(name))
@@ -157,7 +157,7 @@ public class UserTags extends ListenerAdapter
             try
             {
                 // Get JSON file
-                JSONObject json = parseJSONFile("gifs.json");
+                JSONObject json = parseJSONFile();
                 JSONArray gifArray = json.getJSONArray(name);
                 String link = gifArray.getString((int) (Math.random() * gifArray.length()));
 
@@ -167,9 +167,9 @@ public class UserTags extends ListenerAdapter
         }
     }
 
-    private JSONObject parseJSONFile(String filename) throws IOException, JSONException
+    private JSONObject parseJSONFile() throws IOException, JSONException
     {
-        InputStream in = new FileInputStream(filename);
+        InputStream in = new FileInputStream("gifs.json");
         String jsonString = new String(in.readAllBytes(), StandardCharsets.UTF_8);
 
         if (jsonString.startsWith("{"))
@@ -181,7 +181,7 @@ public class UserTags extends ListenerAdapter
         }
     }
     
-    private void RemoveListener(GuildMessageReceivedEvent event1, String name, JSONObject json, String[] links) throws InterruptedException
+    private void RemoveListener(GuildMessageReceivedEvent event1, String name, JSONObject json, String[] links)
     {
         ListenerAdapter remove = new ListenerAdapter()
         {

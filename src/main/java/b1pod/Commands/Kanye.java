@@ -2,7 +2,6 @@ package b1pod.Commands;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URI;

@@ -1,7 +1,7 @@
 package b1pod;
 
 import b1pod.Commands.*;
-import net.dv8tion.jda.api.JDA;
+import b1pod.Commands.Music.Music;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -23,7 +23,7 @@ public class Bot
         JDABuilder.createDefault(args[0])
                 .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_VOICE_STATES)
                 .addEventListeners(
-                        /*new PingCommand(),
+                        new PingCommand(),
                         new FilmCommand(),
                         new HypeManListener(),
                         new NASACommands(),
@@ -31,7 +31,7 @@ public class Bot
                         new DumbStuff(),
                         new UserTags(),
                         new WikipediaSearch(),
-                        new Music(),*/
+                        new Music(),
                         new UserTags2(),
                         new Shutdown()
                 )

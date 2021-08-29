@@ -32,7 +32,7 @@ public class Music extends ListenerAdapter
     private final AudioPlayerManager playerManager;
     private final Map<Long, GuildMusicManager> musicManagers;
 
-    public Music(final String apiKey) {
+    public Music() {
         this.musicManagers = new HashMap<>();
 
         this.playerManager = new DefaultAudioPlayerManager();
@@ -48,9 +48,9 @@ public class Music extends ListenerAdapter
         String[] args = content.split(" ");
         boolean inVoice = false;
 
-        if (event.getMember().getVoiceState() != null)
+        if (Objects.requireNonNull(event.getMember()).getVoiceState() != null)
         {
-            inVoice = event.getMember().getVoiceState().inVoiceChannel();
+            inVoice = Objects.requireNonNull(event.getMember().getVoiceState()).inVoiceChannel();
         }
 
         try
@@ -76,7 +76,7 @@ public class Music extends ListenerAdapter
                 case "queue":
                     if (event.getGuild().getAudioManager().isConnected())
                     {
-                        VoiceChannel userVoiceChannel = event.getMember().getVoiceState().getChannel();
+                        VoiceChannel userVoiceChannel = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
                         VoiceChannel botVoiceChannel = event.getGuild().getAudioManager().getConnectedChannel();
 
                         if (userVoiceChannel != botVoiceChannel) throw new Exception();
@@ -200,7 +200,7 @@ public class Music extends ListenerAdapter
         for (AudioTrack track : musicManager.scheduler.getQueue())
         {
             String value = "[" + track.getInfo().title + "](" + track.getInfo().uri + ")";
-            qEmbed.addField("Track " + String.valueOf(i) + ": ", value, false);
+            qEmbed.addField("Track " + i + ": ", value, false);
             i++;
             if (i == 5) break;
         }
