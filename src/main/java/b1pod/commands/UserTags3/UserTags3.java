@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import static b1pod.Bot.getPrefix;
 import static b1pod.Bot.getSQLPassword;
 
 public class UserTags3 extends Command
@@ -22,7 +23,7 @@ public class UserTags3 extends Command
     public UserTags3()
     {
         this.name = "User Tags";
-        this.syntax = "null";
+        this.syntax = "``" + getPrefix() + "tag``";
         this.description = "Create custom tags!";
         this.guildOnly = true;
         this.triggers = List.of("tag");

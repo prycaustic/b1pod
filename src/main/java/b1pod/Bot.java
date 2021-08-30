@@ -1,9 +1,7 @@
 package b1pod;
 
 import b1pod.commands.*;
-import b1pod.commands.Music.Music;
-import b1pod.commands.PingPong.Ping;
-import b1pod.commands.UserTags3.TagListener;
+import b1pod.commands.Help.Help;
 import b1pod.commands.UserTags3.UserTags3;
 import b1pod.core.CommandHandler;
 import net.dv8tion.jda.api.JDABuilder;
@@ -11,35 +9,37 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 
 public class Bot
 {
-    private static String YOUTUBE_API_KEY;
-    private static String MYSQL_PASSWORD;
-    private static String PREFIX;
-    private static int EMBED_COLOR;
+    protected static String youtubeApiKey;
+    protected static String mySqlPassword;
+    protected static String prefix;
+    protected static int embedColor;
+    protected static CommandHandler commandHandler;
 
     public static void main(String[] args) throws Exception
     {
-        YOUTUBE_API_KEY = args[1];
-        MYSQL_PASSWORD = args[2];
-        PREFIX = "b-";
-        EMBED_COLOR = 0xFFCB77;
+        youtubeApiKey = args[1];
+        mySqlPassword = args[2];
+        prefix = "b-";
+        embedColor = 0xFFCB77;
 
         JDABuilder jda = JDABuilder.createDefault(args[0])
                 .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_VOICE_STATES)
                 .addEventListeners(
-                        new FilmCommand(),
+                        /*new FilmCommand(),
                         new HypeManListener(),
                         new NASACommands(),
                         new Kanye(),
                         new DumbStuff(),
                         new WikipediaSearch(),
                         new Music(),
-                        new TagListener(),
+                        new TagListener(),*/
                         new Shutdown()
                 );
 
-        new CommandHandler(jda,
-                new Ping(),
-                new UserTags3());
+        commandHandler = new CommandHandler(jda,
+                new UserTags3(),
+                new Help()
+                );
 
         //jda.setActivity(Activity.playing("CURRENTLY TESTING...COMMANDS MIGHT NOT WORK"));
 
@@ -67,21 +67,26 @@ public class Bot
 
     public static String getPrefix()
     {
-        return PREFIX;
+        return prefix;
     }
 
     public static String getYouTubeApiKey()
     {
-        return YOUTUBE_API_KEY;
+        return youtubeApiKey;
     }
 
     public static String getSQLPassword()
     {
-        return MYSQL_PASSWORD;
+        return mySqlPassword;
     }
 
     public static int getEmbedColor()
     {
-        return EMBED_COLOR;
+        return embedColor;
+    }
+
+    public static CommandHandler getCommandHandler()
+    {
+        return commandHandler;
     }
 }

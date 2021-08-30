@@ -211,13 +211,9 @@ public class Music extends ListenerAdapter
     private static String attemptSearch(String query)
     {
         if (query.startsWith("https://"))
-        {
             return query;
-        }
         else
-        {
             return getUrlFromYoutubeApi(query);
-        }
     }
 
     private static String getUrlFromYoutubeApi(String query)
