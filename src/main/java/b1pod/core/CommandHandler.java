@@ -11,14 +11,18 @@ public class CommandHandler
 
     public CommandHandler(JDABuilder jda, Command... listeners)
     {
-        for (Command command : listeners)
+        for (Command parent : listeners)
         {
-            commands.add(command);
-            jda.addEventListeners(command);
+            commands.add(parent);
+            jda.addEventListeners(parent);
 
-            if (command.getChildren() == null) break;
-            for (Command child : command.getChildren())
+            if (parent.getChildren() == null) break;
+            for (Command child : parent.getChildren())
+            {
                 jda.addEventListeners(child);
+                child.setParent(parent);
+                child.setGuildOnly(parent.getGuildOnly());
+            }
         }
     }
 

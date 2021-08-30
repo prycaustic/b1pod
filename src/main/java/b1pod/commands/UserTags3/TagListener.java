@@ -13,11 +13,13 @@ public class TagListener extends ListenerAdapter
     @Override
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event)
     {
+        String guildId = event.getGuild().getId();
+
         try
         {
-            if (tagsEnabled(getConn(), event.getGuild().getId()))
+            if (tagsEnabled(guildId))
             {
-                String tag = getTag(getConn(), event.getGuild().getId(), event.getMessage().getContentRaw());
+                String tag = getTag(guildId, event.getMessage().getContentRaw());
 
                 if (tag != null)
                     event.getChannel().sendMessage(tag).queue();

@@ -6,16 +6,13 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;
 
-import static b1pod.Bot.getPrefix;
 import static b1pod.commands.UserTags3.UserTags3.*;
 
 public class TagEnable extends Command
 {
-    public TagEnable(Command parent)
+    public TagEnable()
     {
-        this.parent = parent;
         this.name = "Enable";
-        this.syntax = "``" + getPrefix() + "tag enable``";
         this.description = "Enable tags in your server.";
         this.triggers = List.of("enable");
     }
@@ -24,12 +21,12 @@ public class TagEnable extends Command
     protected ExecutionResult execute(MessageReceivedEvent event, String[] args) throws Exception
     {
         String guildId = event.getGuild().getId();
-        if (tagsEnabled(getConn(), guildId)) return new ExecutionResult("failure", "Tags already enabled.");
-        if (disabledTableExists(getConn(), guildId))
+        if (tagsEnabled(guildId)) return new ExecutionResult("failure", "Tags already enabled.");
+        if (disabledTableExists(guildId))
         {
             String query = "RENAME TABLE `d" + guildId + "` TO `g" + guildId + "`;";
 
-            update(getConn(), query);
+            update(query);
         }
         else
         {
@@ -39,7 +36,7 @@ public class TagEnable extends Command
                     " UNIQUE INDEX `name` (`name`)" +
                     " );";
 
-            update(conn, query);
+            update(query);
         }
 
         return new ExecutionResult("success");

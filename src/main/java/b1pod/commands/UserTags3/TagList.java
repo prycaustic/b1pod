@@ -14,11 +14,9 @@ import static b1pod.commands.UserTags3.UserTags3.*;
 
 public class TagList extends Command
 {
-    public TagList(Command parent)
+    public TagList()
     {
-        this.parent = parent;
         this.name = "List";
-        this.syntax = "``" + getPrefix() + "tag list``";
         this.description = "Lists all tags from this server.";
         this.triggers = Arrays.asList("list", "-l");
     }
@@ -27,9 +25,9 @@ public class TagList extends Command
     protected ExecutionResult execute(MessageReceivedEvent event, String[] args) throws Exception
     {
         String guildId = event.getGuild().getId();
-        if (!tagsEnabled(getConn(), guildId)) return new ExecutionResult("failure", "Tags are not enabled in this server.");
+        if (!tagsEnabled(guildId)) return new ExecutionResult("failure", "Tags are not enabled in this server.");
         String query = "SELECT * FROM g" + guildId;
-        ResultSet result = retrieve(getConn(), query);
+        ResultSet result = retrieve(query);
         EmbedBuilder listEmbed = new EmbedBuilder().setTitle("Tags").setColor(getEmbedColor());
 
         if (result.next())

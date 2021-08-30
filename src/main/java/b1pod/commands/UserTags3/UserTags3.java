@@ -12,7 +12,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import static b1pod.Bot.getPrefix;
 import static b1pod.Bot.getSQLPassword;
 
 public class UserTags3 extends Command
@@ -22,13 +21,11 @@ public class UserTags3 extends Command
 
     public UserTags3()
     {
-        this.name = "User Tags";
-        this.syntax = "``" + getPrefix() + "tag``";
+        this.name = "Tag";
         this.description = "Create custom tags!";
         this.guildOnly = true;
         this.triggers = List.of("tag");
-        this.children = new Command[] {new TagAdd(this), new TagRemove(this), new TagList(this),
-                new TagEnable(this), new TagDisable(this)};
+        this.children = new Command[] {new TagAdd(), new TagRemove(), new TagList(), new TagEnable(), new TagDisable()};
 
         try { conn = connect(); } catch (SQLException e) { e.printStackTrace(); }
     }
@@ -37,16 +34,6 @@ public class UserTags3 extends Command
     protected ExecutionResult execute(MessageReceivedEvent event, String[] args)
     {
         return this.getHelp();
-    }
-
-    public static String getDB_NAME()
-    {
-        return DB_NAME;
-    }
-
-    public static Connection getConn()
-    {
-        return conn;
     }
 
     // Command Utilities
@@ -58,20 +45,20 @@ public class UserTags3 extends Command
         return DriverManager.getConnection("jdbc:mariadb://localhost/" + DB_NAME, "root", getSQLPassword());
     }
 
-    public static ResultSet retrieve(Connection conn, String query) throws SQLException
+    public static ResultSet retrieve(String query) throws SQLException
     {
         return conn.prepareStatement(query).executeQuery();
     }
 
-    public static void update(Connection conn, String query) throws SQLException
+    public static void update(String query) throws SQLException
     {
         conn.prepareStatement(query).executeUpdate();
     }
 
-    public static String getTag(Connection conn, String guildId, String name) throws SQLException
+    public static String getTag(String guildId, String name) throws SQLException
     {
         String query = "SELECT * FROM g" + guildId + " WHERE name='" + name + "'";
-        ResultSet result = retrieve(conn, query);
+        ResultSet result = retrieve(query);
 
         if (result.next())
             return result.getString("value");
@@ -79,17 +66,18 @@ public class UserTags3 extends Command
         return null;
     }
 
-    public static boolean tagsEnabled(Connection conn, String guildId) throws SQLException
+    public static boolean tagsEnabled(String guildId) throws SQLException
     {
-        ResultSet result = conn.getMetaData().getTables(null, null, "g" + guildId, null);
-
-        return result.next();
+        return tableExists("g" + guildId);
     }
 
-    public static boolean disabledTableExists(Connection conn, String guildId) throws SQLException
+    public static boolean disabledTableExists(String guildId) throws SQLException
     {
-        ResultSet result = conn.getMetaData().getTables(null, null, "d" + guildId, null);
+        return tableExists("d" + guildId);
+    }
 
-        return result.next();
+    private static boolean tableExists(String tableName) throws SQLException
+    {
+        return conn.getMetaData().getTables(null, null, tableName, null).next();
     }
 }

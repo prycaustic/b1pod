@@ -12,12 +12,13 @@ import static b1pod.commands.UserTags3.UserTags3.*;
 
 public class TagAdd extends Command
 {
-    public TagAdd(Command parent)
+    public TagAdd()
     {
-        this.parent = parent;
         this.name = "Add";
-        this.syntax = "``" + getPrefix() + "tag add <name> <value>``";
-        this.description = "Tag names and values with more than one word should be surrounded with quotes.";
+        this.syntax = "<name> <value>";
+        this.description = "Add a new tag to this server, each tag must have a unique name." +
+                "\n``<name> single word or multiple words in quotes e.g. ``\"tag name\" <value>``" +
+                "\n``<value> single word or multiple words in quote e.g. ``<name> \"tag value\"``";
         this.triggers = Arrays.asList("add", "-a");
     }
 
@@ -29,10 +30,10 @@ public class TagAdd extends Command
                 + getPrefix() + "tag help` for more info.");
         String name = args[2], value = args[3];
 
-        if (getTag(getConn(), guildId, name) != null) return new ExecutionResult("warning", "Tag already exists.");
+        if (getTag(guildId, name) != null) return new ExecutionResult("warning", "Tag already exists.");
         String query = "INSERT INTO g" + guildId + " VALUES ('" + name + "', '" + value + "');";
 
-        update(getConn(), query);
+        update(query);
         return new ExecutionResult("success");
     }
 }

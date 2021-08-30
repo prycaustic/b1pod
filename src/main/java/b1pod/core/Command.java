@@ -15,7 +15,7 @@ import static b1pod.Bot.*;
 public abstract class Command extends ListenerAdapter
 {
     protected String name = "null";
-    protected String syntax = "null";
+    protected String syntax = "";
     protected String description = "No description available.";
     protected List<String> triggers = new ArrayList<>();
     protected Command[] children = null;
@@ -34,18 +34,20 @@ public abstract class Command extends ListenerAdapter
 
         try
         {
-            if (guildOnly && !event.isFromGuild())
-                parseResult(message, new ExecutionResult("warning", "This command cannot be used in private messages."));
-            else if (args.length == 1)
+            if (guildOnly && !event.isFromGuild()) return;
+
+            if (args.length == 1)
             {
                 if (triggers.contains(args[0]))
                     parseResult(message, execute(event, args));
-            } else if (args.length > 1 && !args[1].equalsIgnoreCase("help"))
+            }
+            else if (args.length > 1 && !args[1].equalsIgnoreCase("help"))
             {
                 if (parent == null) return;
                 if (parent.getTriggers().contains(args[0]) && triggers.contains(args[1]))
                     parseResult(message, execute(event, args));
-            } else if (args.length > 1 && triggers.contains(args[0]))
+            }
+            else if (args.length > 1 && triggers.contains(args[0]))
             {
                 if (args[1].equalsIgnoreCase("help"))
                     parseResult(message, getHelp());
@@ -82,6 +84,21 @@ public abstract class Command extends ListenerAdapter
             message.replyEmbeds(embed).mentionRepliedUser(false).queue();
     }
 
+    public void setParent(Command parent)
+    {
+        this.parent = parent;
+    }
+
+    public void setGuildOnly(boolean guildOnly)
+    {
+        this.guildOnly = guildOnly;
+    }
+
+    public boolean getGuildOnly()
+    {
+        return guildOnly;
+    }
+
     public String getName()
     {
         return name;
@@ -89,7 +106,7 @@ public abstract class Command extends ListenerAdapter
 
     public String getSyntax()
     {
-        return syntax;
+        return "``" + getPrefix() + name.toLowerCase() + " " + syntax + "``";
     }
 
     public String getDescription()

@@ -2,6 +2,7 @@ package b1pod;
 
 import b1pod.commands.*;
 import b1pod.commands.Help.Help;
+import b1pod.commands.Music.Music;
 import b1pod.commands.UserTags3.UserTags3;
 import b1pod.core.CommandHandler;
 import net.dv8tion.jda.api.JDABuilder;
@@ -38,6 +39,7 @@ public class Bot
 
         commandHandler = new CommandHandler(jda,
                 new UserTags3(),
+                new Music(),
                 new Help()
                 );
 
