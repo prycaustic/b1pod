@@ -1,5 +1,9 @@
 package b1pod.commands.Music;
 
+import b1pod.core.Category;
+import b1pod.core.Command;
+import b1pod.core.ExecutionResult;
+import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -9,6 +13,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -22,24 +27,50 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import static b1pod.Bot.*;
 
-public class Music extends ListenerAdapter
+public class Music extends Category
 {
-    private final AudioPlayerManager playerManager;
-    private final Map<Long, GuildMusicManager> musicManagers;
+    public static AudioPlayerManager playerManager;
+    public static Map<Long, GuildMusicManager> musicManagers;
+    public static ExecutionResult NotInVoiceResult =
+            new ExecutionResult("warning", "You must be in a voice channel to use this command.");
 
-    public Music() {
-        this.musicManagers = new HashMap<>();
+    public Music()
+    {
+        this.name = "Music";
+        this.description = "Music player / on demand ear blaster.";
+        this.triggers = List.of("music");
+        this.commands = new Command[] {new Play(), new Skip(), new Queue(), new Loop()};
 
-        this.playerManager = new DefaultAudioPlayerManager();
+        musicManagers = new HashMap<>();
+        playerManager = new DefaultAudioPlayerManager();
+        playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.HIGH);
+        playerManager.getConfiguration().setOpusEncodingQuality(10);
+        playerManager.setFrameBufferDuration(15000);
+        playerManager.setPlayerCleanupThreshold(300000);
         AudioSourceManagers.registerRemoteSources(playerManager);
-        AudioSourceManagers.registerLocalSource(playerManager);
     }
 
+    public static synchronized GuildMusicManager getGuildAudioPlayer(Guild guild) {
+        long guildId = Long.parseLong(guild.getId());
+        GuildMusicManager musicManager = musicManagers.get(guildId);
+
+        if (musicManager == null) {
+            musicManager = new GuildMusicManager(playerManager);
+            musicManagers.put(guildId, musicManager);
+        }
+
+        guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
+
+        return musicManager;
+    }
+
+    /*
     @Override
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event)
     {
@@ -253,5 +284,5 @@ public class Music extends ListenerAdapter
         {
             return null;
         }
-    }
+    }*/
 }
