@@ -17,8 +17,8 @@ public class TagAdd extends Command
         this.name = "Add";
         this.syntax = "<name> <value>";
         this.description = "Add a new tag to this server, each tag must have a unique name." +
-                "\n``<name> single word or multiple words in quotes e.g. ``\"tag name\" <value>``" +
-                "\n``<value> single word or multiple words in quote e.g. ``<name> \"tag value\"``";
+                "\n``<name>`` single word or multiple words in quotes e.g. ``\"tag name\" <value>``" +
+                "\n``<value>`` single word or multiple words in quote e.g. ``<name> \"tag value\"``";
         this.triggers = Arrays.asList("add", "-a");
     }
 

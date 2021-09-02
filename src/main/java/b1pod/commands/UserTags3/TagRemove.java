@@ -16,7 +16,7 @@ public class TagRemove extends Command
         this.name = "Remove";
         this.syntax = "<name>";
         this.description = "Deletes the specified tag." +
-                "``<name> single word or multiple words in quotes, not case-sensitive.";
+                "\n``<name>`` single word or multiple words in quotes, not case-sensitive.";
         this.triggers = Arrays.asList("remove", "-r");
     }
 

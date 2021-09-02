@@ -24,7 +24,6 @@ public class ExecutionResult
         this.Emoji = emoji;
     }
 
-
     public String getEmoji()
     {
         return Emoji;
