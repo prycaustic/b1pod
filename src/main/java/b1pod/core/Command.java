@@ -9,13 +9,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static b1pod.Bot.*;
 
 public abstract class Command extends ListenerAdapter
 {
     protected String name = "null";
-    protected String syntax = "";
+    protected String syntax = null;
     protected String description = "No description available.";
     protected List<String> triggers = new ArrayList<>();
     protected Command[] children = null;
@@ -34,24 +35,22 @@ public abstract class Command extends ListenerAdapter
 
         try
         {
-            if (guildOnly && !event.isFromGuild()) return;
-
             if (args.length == 1)
             {
-                if (triggers.contains(args[0]))
-                    parseResult(message, execute(event, args));
+                if (parent == null && triggers.contains(args[0]))
+                    checkGuildAndParseResult(event, args);
             }
-            else if (args.length > 1 && !args[1].equalsIgnoreCase("help"))
+            else if (args.length > 1)
             {
-                if (parent == null) return;
-                if (parent.getTriggers().contains(args[0]) && triggers.contains(args[1]))
-                    parseResult(message, execute(event, args));
+                if (parent != null && parent.getTriggers().contains(args[0]) && triggers.contains(args[1]))
+                    checkGuildAndParseResult(event, args);
+                if (parent == null & triggers.contains(args[0]))
+                    checkGuildAndParseResult(event, args);
             }
-            else if (args.length > 1 && triggers.contains(args[0]))
-            {
-                if (args[1].equalsIgnoreCase("help"))
-                    parseResult(message, getHelp());
-            }
+        }
+        catch (IllegalStateException e)
+        {
+            parseResult(message, new ExecutionResult("warning", e.getMessage()));
         }
         catch (Exception e)
         {
@@ -60,7 +59,7 @@ public abstract class Command extends ListenerAdapter
         }
     }
 
-    public final String[] parseInput(String content)
+    private String[] parseInput(String content)
     {
         String[] args = content.substring(getPrefix().length()).split(" (?=([^\"]*\"[^\"]*\")*[^\"]*$)");
         for (int i = 0; i < args.length; i++)
@@ -70,7 +69,7 @@ public abstract class Command extends ListenerAdapter
         return args;
     }
 
-    public final void parseResult(Message message, ExecutionResult result)
+    private void parseResult(Message message, ExecutionResult result)
     {
         if (result == null) return;
         String emoji = result.getEmoji(), reason = result.getReason();
@@ -82,6 +81,12 @@ public abstract class Command extends ListenerAdapter
             message.reply(getEmote(emoji) + " " + reason).mentionRepliedUser(false).queue();
         if (result.getEmbed() != null)
             message.replyEmbeds(embed).mentionRepliedUser(false).queue();
+    }
+
+    private void checkGuildAndParseResult(MessageReceivedEvent event, String[] args) throws Exception
+    {
+        if (guildOnly && !event.isFromGuild()) throw new IllegalStateException("This command cannot be used in Private Messages.");
+        parseResult(event.getMessage(), execute(event, args));
     }
 
     public void setParent(Command parent)
@@ -106,7 +111,13 @@ public abstract class Command extends ListenerAdapter
 
     public String getSyntax()
     {
-        return "``" + getPrefix() + name.toLowerCase() + " " + syntax + "``";
+        StringBuilder syntaxBuilder = new StringBuilder("``" + getPrefix());
+        if (parent != null) { syntaxBuilder.append(parent.getName().toLowerCase()); }
+        syntaxBuilder.append(name.toLowerCase());
+        if (syntax != null) { syntaxBuilder.append(" ").append(syntax); }
+        syntaxBuilder.append("``");
+
+        return syntaxBuilder.toString();
     }
 
     public String getDescription()

@@ -3,6 +3,7 @@ package b1pod;
 import b1pod.commands.*;
 import b1pod.commands.Help.Help;
 import b1pod.commands.Music.Music;
+import b1pod.commands.UserTags3.TagListener;
 import b1pod.commands.UserTags3.UserTags3;
 import b1pod.core.CommandHandler;
 import net.dv8tion.jda.api.JDABuilder;
@@ -26,22 +27,18 @@ public class Bot
         JDABuilder jda = JDABuilder.createDefault(args[0])
                 .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_VOICE_STATES)
                 .addEventListeners(
-                        /*new FilmCommand(),
+                        new FilmCommand(),
                         new HypeManListener(),
                         new NASACommands(),
                         new Kanye(),
                         new DumbStuff(),
                         new WikipediaSearch(),
-                        new Music(),
-                        new TagListener(),*/
+                        new TagListener(),
                         new Shutdown()
                 );
 
-        commandHandler = new CommandHandler(jda,
-                new UserTags3(),
-                new Music(),
-                new Help()
-                );
+        commandHandler = new CommandHandler(jda, new UserTags3(), new Help())
+                .addCategories(new Music());
 
         //jda.setActivity(Activity.playing("CURRENTLY TESTING...COMMANDS MIGHT NOT WORK"));
 
