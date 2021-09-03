@@ -45,7 +45,8 @@ public class Music extends Category
         this.name = "Music";
         this.description = "Music player / on demand ear blaster.";
         this.triggers = List.of("music");
-        this.commands = new Command[] {new Play(), new Skip(), new Queue(), new Loop()};
+        this.commands = new Command[] {new Play(), new Skip(), new Queue(), new Loop(), new Clear(), new FastForward(),
+                new Disconnect()};
 
         musicManagers = new HashMap<>();
         playerManager = new DefaultAudioPlayerManager();
