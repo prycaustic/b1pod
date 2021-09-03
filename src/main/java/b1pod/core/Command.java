@@ -112,7 +112,7 @@ public abstract class Command extends ListenerAdapter
     public String getSyntax()
     {
         StringBuilder syntaxBuilder = new StringBuilder("``" + getPrefix());
-        if (parent != null) { syntaxBuilder.append(parent.getName().toLowerCase()); }
+        if (parent != null) { syntaxBuilder.append(parent.getName().toLowerCase()).append(" "); }
         syntaxBuilder.append(name.toLowerCase());
         if (syntax != null) { syntaxBuilder.append(" ").append(syntax); }
         syntaxBuilder.append("``");

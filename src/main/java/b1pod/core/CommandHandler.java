@@ -21,13 +21,7 @@ public class CommandHandler
             commands.add(cmd);
             jdaBuilder.addEventListeners(cmd);
 
-            if (cmd.getChildren() == null) break;
-            for (Command child : cmd.getChildren())
-            {
-                jdaBuilder.addEventListeners(child);
-                child.setParent(cmd);
-                child.setGuildOnly(cmd.getGuildOnly());
-            }
+            addChildren(cmd);
         }
     }
 
@@ -39,9 +33,23 @@ public class CommandHandler
             jdaBuilder.addEventListeners(cat);
 
             for (Command cmd : cat.getCommands())
+            {
                 jdaBuilder.addEventListeners(cmd);
+                addChildren(cmd);
+            }
         }
         return this;
+    }
+
+    private void addChildren(Command cmd)
+    {
+        if (cmd.getChildren() == null) return;
+        for (Command child : cmd.getChildren())
+        {
+            jdaBuilder.addEventListeners(child);
+            child.setParent(cmd);
+            child.setGuildOnly(cmd.getGuildOnly());
+        }
     }
 
     public List<Command> getCommands()

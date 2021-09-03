@@ -24,8 +24,8 @@ public class Help extends Command
     {
         EmbedBuilder helpEmbed = new EmbedBuilder()
                 .setTitle("bent-bot Manual")
-                .setDescription("Use ``" + getPrefix() + "<command>`` to get help with a specific command or" +
-                        "Use ``" + getPrefix() + "<category>`` to list the commands in a category.")
+                .setDescription("Use ``" + getPrefix() + "<command>`` to get help with a specific command or\n" +
+                        "use ``" + getPrefix() + "<category>`` to list the commands in a category.")
                 .setColor(getEmbedColor());
 
         // Add commands
