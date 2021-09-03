@@ -6,10 +6,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 import static b1pod.Bot.getSQLPassword;
@@ -40,9 +37,17 @@ public class UserTags3 extends Command
     public static Connection connect() throws SQLException
     {
         Logger logger = LoggerFactory.getLogger(UserTags3.class);
-        logger.info("Logging into mariadb.");
+        logger.info("Logging into Mariadb.");
 
-        return DriverManager.getConnection("jdbc:mariadb://localhost/" + DB_NAME, "root", getSQLPassword());
+        try
+        {
+            return DriverManager.getConnection("jdbc:mariadb://localhost/" + DB_NAME, "root", getSQLPassword());
+        }
+        catch (SQLInvalidAuthorizationSpecException e)
+        {
+            logger.error("Mariadb login failed.");
+            return null;
+        }
     }
 
     public static ResultSet retrieve(String query) throws SQLException

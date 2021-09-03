@@ -25,6 +25,8 @@ import static b1pod.commands.Music.Music.*;
 
 public class Play extends Command
 {
+    private static TextChannel musicChannel;
+
     public Play()
     {
         this.name = "Play";
@@ -41,6 +43,7 @@ public class Play extends Command
         String content = event.getMessage().getContentRaw();
         String trackUrl = attemptSearch(content);
 
+        musicChannel = event.getTextChannel();
         loadAndPlay(event.getMessage(), trackUrl);
 
         return null;
@@ -48,12 +51,15 @@ public class Play extends Command
 
     private void loadAndPlay(Message message, String trackUrl)
     {
-        playerManager.loadItem(trackUrl, new AudioLoadResultHandler()
+        GuildMusicManager musicManager = getGuildAudioPlayer(message.getGuild());
+
+        playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler()
         {
             @Override
             public void trackLoaded(AudioTrack track)
             {
                 play(track, message.getMember());
+                if (musicManager.scheduler.getQueue().size() < 1) return;
                 message.reply("Queued: " + track.getInfo().title).mentionRepliedUser(false).queue();
             }
 
@@ -67,12 +73,14 @@ public class Play extends Command
                     for (AudioTrack track : playlist.getTracks())
                         play(track, message.getMember());
 
+                    if (musicManager.scheduler.getQueue().size() < 1) return;
                     message.reply("Queued " + playlist.getTracks().size() +
                             " songs from playlist: " + playlist.getName()).mentionRepliedUser(false).queue();
                 }
                 else
                 {
                     play(selectedTrack, message.getMember());
+                    if (musicManager.scheduler.getQueue().size() < 1) return;
                     message.reply("Queued: " + selectedTrack.getInfo().title).mentionRepliedUser(false).queue();
                 }
             }
@@ -151,5 +159,10 @@ public class Play extends Command
         {
             return null;
         }
+    }
+
+    public static TextChannel getMusicChannel()
+    {
+        return musicChannel;
     }
 }

@@ -33,6 +33,6 @@ public class Skip extends Command
 
         for (int i = 0; i < number; i++)
             musicManager.scheduler.nextTrack();
-        return new ExecutionResult("success", number + " track" + ((number > 1) ? "s" : "") + " skipped.");
+        return new ExecutionResult("success");
     }
 }

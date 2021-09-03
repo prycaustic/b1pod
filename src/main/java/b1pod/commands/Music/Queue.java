@@ -2,9 +2,9 @@ package b1pod.commands.Music;
 
 import b1pod.core.Command;
 import b1pod.core.ExecutionResult;
-import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.Arrays;
@@ -16,6 +16,9 @@ import static b1pod.commands.Music.Music.getGuildAudioPlayer;
 
 public class Queue extends Command
 {
+    private GuildMusicManager musicManager;
+    private BlockingQueue<AudioTrack> trackQueue;
+
     public Queue()
     {
         this.name = "Queue";
@@ -29,24 +32,53 @@ public class Queue extends Command
     protected ExecutionResult execute(MessageReceivedEvent event, String[] args)
     {
         if (!event.getMember().getVoiceState().inVoiceChannel()) return NotInVoiceResult;
-        GuildMusicManager musicManager = getGuildAudioPlayer(event.getGuild());
-        if (musicManager.scheduler.getQueue().size() == 0) return new ExecutionResult("warning", "Not playing anything.");
+        musicManager = getGuildAudioPlayer(event.getGuild());
+        trackQueue = musicManager.scheduler.getQueue();
+        if (musicManager.player.isPaused()) return new ExecutionResult("warning", "Not playing anything.");
+
+        try
+        {
+            switch (args.length)
+            {
+                case 1:
+                    return new ExecutionResult(buildQueueEmbed(1));
+                case 2:
+                    try
+                    {
+                        return new ExecutionResult(buildQueueEmbed(Integer.parseInt(args[1])));
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        return new ExecutionResult("warning", "``<track number>`` must be a number.");
+                    }
+                default:
+                    return null;
+            }
+        }
+        catch (IndexOutOfBoundsException e)
+        {
+            return new ExecutionResult("failure", e.getMessage());
+        }
+    }
+
+    private MessageEmbed buildQueueEmbed(int pageNumber) throws IndexOutOfBoundsException
+    {
         // Get currently playing track
         AudioTrack currentTrack = musicManager.player.getPlayingTrack();
-        String currentTrackValue = "[" +  currentTrack.getInfo().title + "](" + currentTrack.getInfo().uri + ")";
+        String currentTrackValue = "[" + currentTrack.getInfo().title + "](" + currentTrack.getInfo().uri + ")";
 
         // Get queue
-        BlockingQueue<AudioTrack> bQueue = musicManager.scheduler.getQueue();
-        AudioTrack[] queue = new AudioTrack[bQueue.size()];
-        queue = bQueue.toArray(queue);
-        int pageNumber = (args.length > 1) ? Integer.parseInt(args[1]) : 1;
+        AudioTrack[] queue = new AudioTrack[trackQueue.size()];
+        queue = trackQueue.toArray(queue);
         int startIndex = (pageNumber * 5) - 4;
+        if (startIndex < 1)
+            throw new IndexOutOfBoundsException("Page does not exist.");
+
         StringBuilder description = new StringBuilder();
-        description.append("There are ").append(bQueue.size()).append(" tracks queued.");
+        description.append("There are ").append(trackQueue.size()).append(" tracks queued.");
         if (musicManager.scheduler.isLooping())
             description.append("\nPlayer is set to loop current track.");
 
-        if (startIndex < 1 || startIndex > queue.length) return new ExecutionResult("warning", "Page does not exist.");
         EmbedBuilder qEmbed = new EmbedBuilder()
                 .setTitle("Music Queue")
                 .setDescription(description)
@@ -62,6 +94,6 @@ public class Queue extends Command
             qEmbed.addField("Track " + i + ": ", value, false);
         }
 
-        return new ExecutionResult(qEmbed.build());
+        return qEmbed.build();
     }
 }

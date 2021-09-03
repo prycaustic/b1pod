@@ -4,9 +4,12 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import net.dv8tion.jda.api.EmbedBuilder;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import static b1pod.Bot.getEmbedColor;
 
 /**
  * This class schedules tracks for the audio player. It contains the queue of tracks.
@@ -50,9 +53,19 @@ public class TrackScheduler extends AudioEventAdapter
     }
 
     @Override
+    public void onTrackStart(AudioPlayer player, AudioTrack track)
+    {
+        EmbedBuilder playingEmbed = new EmbedBuilder()
+                .setTitle("Now Playing")
+                .setDescription("[" + track.getInfo().title + "](" + track.getInfo().uri + ")")
+                .setColor(getEmbedColor());
+
+        Play.getMusicChannel().sendMessageEmbeds(playingEmbed.build()).queue();
+    }
+
+    @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         // Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)
-
         if (endReason.mayStartNext)
         {
             if (looping)
