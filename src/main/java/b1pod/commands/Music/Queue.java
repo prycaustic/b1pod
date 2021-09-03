@@ -70,8 +70,8 @@ public class Queue extends Command
         // Get queue
         AudioTrack[] queue = new AudioTrack[trackQueue.size()];
         queue = trackQueue.toArray(queue);
-        int startIndex = (pageNumber * 5) - 4;
-        if (startIndex < 1)
+        int startIndex = (pageNumber * 5) - 5;
+        if (startIndex < 0)
             throw new IndexOutOfBoundsException("Page does not exist.");
 
         StringBuilder description = new StringBuilder();
