@@ -7,6 +7,7 @@ import b1pod.commands.UserTags3.TagListener;
 import b1pod.commands.UserTags3.UserTags3;
 import b1pod.core.CommandHandler;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 public class Bot
@@ -40,6 +41,7 @@ public class Bot
         commandHandler = new CommandHandler(jda, new UserTags3(), new Help())
                 .addCategories(new Music());
 
+        jda.setActivity(Activity.listening("to you cry"));
         //jda.setActivity(Activity.playing("CURRENTLY TESTING...COMMANDS MIGHT NOT WORK"));
 
         jda.build();
