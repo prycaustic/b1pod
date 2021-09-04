@@ -5,6 +5,7 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -19,12 +20,15 @@ public class TrackScheduler extends AudioEventAdapter
     private final AudioPlayer player;
     private final BlockingQueue<AudioTrack> queue;
     private boolean looping;
+    private Guild guild;
 
     /**
      * @param player The audio player this scheduler uses
+     * @param guild The guild that this player is part of
      */
-    public TrackScheduler(AudioPlayer player) {
+    public TrackScheduler(AudioPlayer player, Guild guild) {
         this.player = player;
+        this.guild = guild;
         this.queue = new LinkedBlockingQueue<>();
         this.looping = false;
     }
@@ -60,7 +64,7 @@ public class TrackScheduler extends AudioEventAdapter
                 .setDescription("[" + track.getInfo().title + "](" + track.getInfo().uri + ")")
                 .setColor(getEmbedColor());
 
-        Play.getMusicChannel().sendMessageEmbeds(playingEmbed.build()).queue();
+        Music.getGuildMusicChannel(guild).sendMessageEmbeds(playingEmbed.build()).queue();
     }
 
     @Override

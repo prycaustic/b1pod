@@ -37,6 +37,7 @@ public class Music extends Category
 {
     public static AudioPlayerManager playerManager;
     public static Map<Long, GuildMusicManager> musicManagers;
+    public static Map<Long, TextChannel> musicChannels;
     public static ExecutionResult NotInVoiceResult =
             new ExecutionResult("warning", "You must be in a voice channel to use this command.");
 
@@ -49,6 +50,7 @@ public class Music extends Category
                 new Disconnect()};
 
         musicManagers = new HashMap<>();
+        musicChannels = new HashMap<>();
         playerManager = new DefaultAudioPlayerManager();
         playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.HIGH);
         playerManager.getConfiguration().setOpusEncodingQuality(10);
@@ -62,13 +64,27 @@ public class Music extends Category
         GuildMusicManager musicManager = musicManagers.get(guildId);
 
         if (musicManager == null) {
-            musicManager = new GuildMusicManager(playerManager);
+            musicManager = new GuildMusicManager(playerManager, guild);
             musicManagers.put(guildId, musicManager);
         }
 
         guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
 
         return musicManager;
+    }
+
+    public static TextChannel getGuildMusicChannel(Guild guild)
+    {
+        long guildId = guild.getIdLong();
+
+        return musicChannels.get(guildId);
+    }
+
+    public static void setGuildMusicChannel(Guild guild, TextChannel textChannel)
+    {
+        long guildId = guild.getIdLong();
+
+        musicChannels.put(guildId, textChannel);
     }
 
     /*

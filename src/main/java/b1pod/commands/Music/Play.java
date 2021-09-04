@@ -43,7 +43,7 @@ public class Play extends Command
         String content = event.getMessage().getContentRaw();
         String trackUrl = attemptSearch(content);
 
-        musicChannel = event.getTextChannel();
+        setGuildMusicChannel(event.getGuild(), event.getTextChannel());
         loadAndPlay(event.getMessage(), trackUrl);
 
         return null;
