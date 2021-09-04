@@ -41,7 +41,7 @@ public class Bot
         commandHandler = new CommandHandler(jda, new UserTags3(), new Help())
                 .addCategories(new Music());
 
-        jda.setActivity(Activity.listening("to you cry"));
+        jda.setActivity(Activity.listening("you cry"));
         //jda.setActivity(Activity.playing("CURRENTLY TESTING...COMMANDS MIGHT NOT WORK"));
 
         jda.build();
