@@ -25,8 +25,6 @@ import static b1pod.commands.Music.Music.*;
 
 public class Play extends Command
 {
-    private static TextChannel musicChannel;
-
     public Play()
     {
         this.name = "Play";
@@ -159,10 +157,5 @@ public class Play extends Command
         {
             return null;
         }
-    }
-
-    public static TextChannel getMusicChannel()
-    {
-        return musicChannel;
     }
 }

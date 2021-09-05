@@ -35,16 +35,11 @@ public abstract class Command extends ListenerAdapter
 
         try
         {
-            if (args.length == 1)
-            {
-                if (parent == null && triggers.contains(args[0]))
-                    checkGuildAndParseResult(event, args);
-            }
-            else if (args.length > 1)
+            if (args.length > 1)
             {
                 if (parent != null && parent.getTriggers().contains(args[0]) && triggers.contains(args[1]))
                     checkGuildAndParseResult(event, args);
-                if (parent == null & triggers.contains(args[0]))
+                if (parent == null && triggers.contains(args[0]))
                     checkGuildAndParseResult(event, args);
             }
         }

@@ -91,7 +91,7 @@ public class Queue extends Command
             if (i > queue.length - 1) break;
             AudioTrack track = queue[i];
             String value = "[" + track.getInfo().title + "](" + track.getInfo().uri + ")";
-            qEmbed.addField("Track " + i + ": ", value, false);
+            qEmbed.addField("Track " + (i + 1) + ": ", value, false);
         }
 
         return qEmbed.build();
