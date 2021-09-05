@@ -5,27 +5,24 @@ import b1pod.core.Command;
 import b1pod.core.ExecutionResult;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import okhttp3.internal.http2.Http2Connection;
 
 import java.util.List;
 
 import static b1pod.Bot.*;
 
-public class Help extends Command
+public class Help extends ListenerAdapter
 {
-    public Help()
-    {
-        this.name = "Help";
-        this.description = "Display this help message.";
-        this.triggers = List.of("help");
-    }
-
     @Override
-    protected ExecutionResult execute(MessageReceivedEvent event, String[] args) throws Exception
+    public void onMessageReceived(MessageReceivedEvent event)
     {
+        if (event.getAuthor().isBot()) return;
+        if (!event.getMessage().getContentRaw().equalsIgnoreCase(getPrefix() + "help")) return;
         EmbedBuilder helpEmbed = new EmbedBuilder()
                 .setTitle("bent-bot Manual")
-                .setDescription("Use ``" + getPrefix() + "<command>`` to get help with a specific command or\n" +
-                        "use ``" + getPrefix() + "<category>`` to list the commands in a category.")
+                .setDescription("Use ``" + getPrefix() + "<command> help`` to get help with a specific command.\n" +
+                        "Use ``" + getPrefix() + "<category>`` to list the commands in a category.")
                 .setColor(getEmbedColor());
 
         // Add commands
@@ -40,6 +37,6 @@ public class Help extends Command
 
         helpEmbed.addField("Categories", catValue.toString(), false);
 
-        return new ExecutionResult(helpEmbed.build());
+        event.getMessage().replyEmbeds(helpEmbed.build()).mentionRepliedUser(false).queue();
     }
 }

@@ -13,6 +13,7 @@ public class TagListener extends ListenerAdapter
     @Override
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event)
     {
+        if (event.getAuthor().isBot()) return;
         String guildId = event.getGuild().getId();
 
         try

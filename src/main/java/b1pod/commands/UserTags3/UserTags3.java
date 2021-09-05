@@ -30,7 +30,10 @@ public class UserTags3 extends Command
     @Override
     protected ExecutionResult execute(MessageReceivedEvent event, String[] args)
     {
-        return this.getHelp();
+        if (args[1].equalsIgnoreCase("help"))
+            return this.getHelp();
+
+        return null;
     }
 
     // Command Utilities
@@ -62,8 +65,9 @@ public class UserTags3 extends Command
 
     public static String getTag(String guildId, String name) throws SQLException
     {
-        String query = "SELECT * FROM g" + guildId + " WHERE name='" + name + "'";
-        ResultSet result = retrieve(query);
+        PreparedStatement statement = conn.prepareStatement("SELECT * FROM g" + guildId + " WHERE name=?;");
+        statement.setString(1, name);
+        ResultSet result = statement.executeQuery();
 
         if (result.next())
             return result.getString("value");

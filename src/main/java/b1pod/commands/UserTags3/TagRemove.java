@@ -4,6 +4,7 @@ import b1pod.core.Command;
 import b1pod.core.ExecutionResult;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -25,9 +26,10 @@ public class TagRemove extends Command
     {
         String guildId = event.getGuild().getId(), name = args[2];
         if (getTag(guildId, name) == null) return new ExecutionResult("failure", "Tag does not exist.");
-        String query = "DELETE FROM `g" + guildId + "` WHERE (`name` = '" + name + "');";
+        PreparedStatement statement = conn.prepareStatement("DELETE FROM `g" + guildId + "` WHERE name=?;");
+        statement.setString(1, name);
 
-        update(query);
+        statement.executeUpdate();
         return new ExecutionResult("success");
     }
 }

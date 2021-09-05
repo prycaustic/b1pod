@@ -15,7 +15,7 @@ public class Clear extends Command
     public Clear()
     {
         this.name = "Clear";
-        this.description = "Clear the music queue";
+        this.description = "Clear the music queue.";
         this.triggers = Arrays.asList("clear", "c");
     }
 

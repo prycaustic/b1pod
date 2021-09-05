@@ -4,6 +4,7 @@ import b1pod.core.Command;
 import b1pod.core.ExecutionResult;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -26,14 +27,17 @@ public class TagAdd extends Command
     protected ExecutionResult execute(MessageReceivedEvent event, String[] args) throws SQLException
     {
         String guildId = event.getGuild().getId();
+        if (!tagsEnabled(guildId)) return new ExecutionResult("warning", "Tags are not enabled in this server.");
         if (args.length != 4) return new ExecutionResult("warning", "Incorrect syntax, use `"
                 + getPrefix() + "tag help` for more info.");
         String name = args[2], value = args[3];
 
         if (getTag(guildId, name) != null) return new ExecutionResult("warning", "Tag already exists.");
-        String query = "INSERT INTO g" + guildId + " VALUES ('" + name + "', '" + value + "');";
+        PreparedStatement statement = conn.prepareStatement("INSERT INTO g" + guildId + " VALUES (?, ?);");
+        statement.setString(1, name);
+        statement.setString(2, value);
 
-        update(query);
+        statement.executeUpdate();
         return new ExecutionResult("success");
     }
 }

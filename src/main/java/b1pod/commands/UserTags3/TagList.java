@@ -28,19 +28,14 @@ public class TagList extends Command
         if (!tagsEnabled(guildId)) return new ExecutionResult("failure", "Tags are not enabled in this server.");
         String query = "SELECT * FROM g" + guildId;
         ResultSet result = retrieve(query);
-        EmbedBuilder listEmbed = new EmbedBuilder().setTitle("Tags").setColor(getEmbedColor());
+        EmbedBuilder listEmbed = new EmbedBuilder().setTitle("Tags").setColor(getEmbedColor())
+                .setDescription("No tags found");
 
-        if (result.next())
-        {
-            while (result.next())
-            {
-                listEmbed.addField(result.getString("name"), result.getString("value"), true);
-            }
-        }
-        else
-        {
-            listEmbed.setDescription("No tags found.");
-        }
+         while (result.next())
+         {
+             listEmbed.setDescription("");
+             listEmbed.addField(result.getString("name"), result.getString("value"), true);
+         }
 
         return new ExecutionResult(listEmbed.build());
     }

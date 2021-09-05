@@ -35,10 +35,11 @@ public class Bot
                         new DumbStuff(),
                         new WikipediaSearch(),
                         new TagListener(),
+                        new Help(),
                         new Shutdown()
                 );
 
-        commandHandler = new CommandHandler(jda, new UserTags3(), new Help())
+        commandHandler = new CommandHandler(jda, new UserTags3())
                 .addCategories(new Music());
 
         jda.setActivity(Activity.listening("you cry"));
