@@ -30,6 +30,7 @@ public class UserTags3 extends Command
     @Override
     protected ExecutionResult execute(MessageReceivedEvent event, String[] args)
     {
+        if (args.length != 2) return null;
         if (args[1].equalsIgnoreCase("help"))
             return this.getHelp();
 

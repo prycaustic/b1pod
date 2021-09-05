@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;
 
+import static b1pod.commands.Music.Music.NotInVoiceResult;
 import static b1pod.commands.Music.Music.getGuildAudioPlayer;
 
 public class FastForward extends Command
@@ -21,6 +22,7 @@ public class FastForward extends Command
     @Override
     protected ExecutionResult execute(MessageReceivedEvent event, String[] args) throws Exception
     {
+        if (!event.getMember().getVoiceState().inVoiceChannel()) return NotInVoiceResult;
         GuildMusicManager musicManager = getGuildAudioPlayer(event.getGuild());
         AudioTrack playingTrack = musicManager.player.getPlayingTrack();
         long currentPosition = playingTrack.getPosition();

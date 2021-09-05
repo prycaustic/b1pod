@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
 
+import static b1pod.Bot.getPrefix;
 import static b1pod.commands.UserTags3.UserTags3.*;
 
 public class TagRemove extends Command
@@ -24,6 +25,8 @@ public class TagRemove extends Command
     @Override
     protected ExecutionResult execute(MessageReceivedEvent event, String[] args) throws SQLException
     {
+        if (args.length != 3) return new ExecutionResult("warning", "Incorrect syntax, use `"
+                + getPrefix() + "tag help` for more info.");
         String guildId = event.getGuild().getId(), name = args[2];
         if (getTag(guildId, name) == null) return new ExecutionResult("failure", "Tag does not exist.");
         PreparedStatement statement = conn.prepareStatement("DELETE FROM `g" + guildId + "` WHERE name=?;");

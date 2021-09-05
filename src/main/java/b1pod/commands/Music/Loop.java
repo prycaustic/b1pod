@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.Arrays;
 
+import static b1pod.commands.Music.Music.NotInVoiceResult;
 import static b1pod.commands.Music.Music.getGuildAudioPlayer;
 
 public class Loop extends Command
@@ -20,6 +21,7 @@ public class Loop extends Command
     @Override
     protected ExecutionResult execute(MessageReceivedEvent event, String[] args)
     {
+        if (!event.getMember().getVoiceState().inVoiceChannel()) return NotInVoiceResult;
         GuildMusicManager musicManager = getGuildAudioPlayer(event.getGuild());
         boolean isLooping = musicManager.scheduler.isLooping();
         musicManager.scheduler.setLooping(!isLooping);
