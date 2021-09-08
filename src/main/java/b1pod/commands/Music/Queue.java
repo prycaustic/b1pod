@@ -28,6 +28,7 @@ public class Queue extends Command
         this.triggers = Arrays.asList("queue", "q");
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected ExecutionResult execute(MessageReceivedEvent event, String[] args)
     {

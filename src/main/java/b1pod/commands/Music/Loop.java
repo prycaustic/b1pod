@@ -18,6 +18,7 @@ public class Loop extends Command
         this.triggers = Arrays.asList("loop", "l");
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected ExecutionResult execute(MessageReceivedEvent event, String[] args)
     {

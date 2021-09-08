@@ -20,7 +20,7 @@ public class TrackScheduler extends AudioEventAdapter
     private final AudioPlayer player;
     private final BlockingQueue<AudioTrack> queue;
     private boolean looping;
-    private Guild guild;
+    private final Guild guild;
 
     /**
      * @param player The audio player this scheduler uses
@@ -38,6 +38,7 @@ public class TrackScheduler extends AudioEventAdapter
      *
      * @param track The track to play or add to queue.
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void queue(AudioTrack track) {
         // Calling startTrack with the noInterrupt set to true will start the track only if nothing is currently playing. If
         // something is playing, it returns false and does nothing. In that case the player was already playing so this

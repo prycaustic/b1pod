@@ -18,7 +18,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Objects;
 
 import static b1pod.Bot.*;
 import static b1pod.commands.Music.Music.*;
@@ -34,6 +34,7 @@ public class Play extends Command
         this.triggers = Arrays.asList("play", "p");
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected ExecutionResult execute(MessageReceivedEvent event, String[] args)
     {
@@ -56,7 +57,7 @@ public class Play extends Command
             @Override
             public void trackLoaded(AudioTrack track)
             {
-                play(track, message.getMember());
+                play(track, Objects.requireNonNull(message.getMember()));
                 if (musicManager.scheduler.getQueue().size() < 1) return;
                 message.reply("Queued: " + track.getInfo().title).mentionRepliedUser(false).queue();
             }
@@ -69,7 +70,7 @@ public class Play extends Command
                 if (selectedTrack == null)
                 {
                     for (AudioTrack track : playlist.getTracks())
-                        play(track, message.getMember());
+                        play(track, Objects.requireNonNull(message.getMember()));
 
                     if (musicManager.scheduler.getQueue().size() < 1) return;
                     message.reply("Queued " + playlist.getTracks().size() +
@@ -77,7 +78,7 @@ public class Play extends Command
                 }
                 else
                 {
-                    play(selectedTrack, message.getMember());
+                    play(selectedTrack, Objects.requireNonNull(message.getMember()));
                     if (musicManager.scheduler.getQueue().size() < 1) return;
                     message.reply("Queued: " + selectedTrack.getInfo().title).mentionRepliedUser(false).queue();
                 }
@@ -107,7 +108,7 @@ public class Play extends Command
 
     private static void connectToUserVoiceChannel(AudioManager audioManager, Member member)
     {
-        audioManager.openAudioConnection(member.getVoiceState().getChannel());
+        audioManager.openAudioConnection(Objects.requireNonNull(member.getVoiceState()).getChannel());
     }
 
     private static String attemptSearch(String content)

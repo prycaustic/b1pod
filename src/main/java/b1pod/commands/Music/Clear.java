@@ -2,7 +2,6 @@ package b1pod.commands.Music;
 
 import b1pod.core.Command;
 import b1pod.core.ExecutionResult;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.Arrays;
@@ -19,6 +18,7 @@ public class Clear extends Command
         this.triggers = Arrays.asList("clear", "c");
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected ExecutionResult execute(MessageReceivedEvent event, String[] args) throws Exception
     {

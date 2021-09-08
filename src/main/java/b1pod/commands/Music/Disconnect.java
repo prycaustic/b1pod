@@ -7,9 +7,7 @@ import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.util.Arrays;
 
-import static b1pod.Bot.getEmote;
 import static b1pod.commands.Music.Music.NotInVoiceResult;
-import static b1pod.commands.Music.Music.getGuildAudioPlayer;
 
 public class Disconnect extends Command
 {
@@ -20,6 +18,7 @@ public class Disconnect extends Command
         this.triggers = Arrays.asList("disconnect", "dc", "leave");
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected ExecutionResult execute(MessageReceivedEvent event, String[] args) throws Exception
     {

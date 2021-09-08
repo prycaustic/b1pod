@@ -20,6 +20,7 @@ public class Skip extends Command
         this.triggers = Arrays.asList("skip", "s");
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected ExecutionResult execute(MessageReceivedEvent event, String[] args)
     {

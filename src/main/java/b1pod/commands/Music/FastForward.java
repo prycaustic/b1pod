@@ -19,6 +19,7 @@ public class FastForward extends Command
         this.triggers = List.of("ff");
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected ExecutionResult execute(MessageReceivedEvent event, String[] args) throws Exception
     {

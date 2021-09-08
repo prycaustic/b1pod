@@ -9,8 +9,8 @@ import java.sql.ResultSet;
 import java.util.Arrays;
 
 import static b1pod.Bot.getEmbedColor;
-import static b1pod.Bot.getPrefix;
-import static b1pod.commands.UserTags3.UserTags3.*;
+import static b1pod.commands.UserTags3.UserTags3.retrieve;
+import static b1pod.commands.UserTags3.UserTags3.tagsEnabled;
 
 public class TagList extends Command
 {
