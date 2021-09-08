@@ -4,11 +4,9 @@ import b1pod.core.Command;
 import b1pod.core.ExecutionResult;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static b1pod.commands.Music.Music.NotInVoiceResult;
-import static b1pod.commands.Music.Music.getGuildAudioPlayer;
 
 public class Summon extends Command
 {
@@ -20,6 +18,7 @@ public class Summon extends Command
     }
 
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected ExecutionResult execute(MessageReceivedEvent event, String[] args) throws Exception
     {

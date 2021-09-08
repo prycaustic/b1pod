@@ -4,34 +4,14 @@ import b1pod.core.Category;
 import b1pod.core.Command;
 import b1pod.core.ExecutionResult;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
-import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
-import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.managers.AudioManager;
-import org.apache.http.client.utils.URIBuilder;
-import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-
-import static b1pod.Bot.*;
 
 public class Music extends Category
 {
@@ -47,7 +27,7 @@ public class Music extends Category
         this.description = "Music player / on demand ear blaster.";
         this.triggers = List.of("music");
         this.commands = new Command[] {new Play(), new Skip(), new Queue(), new Loop(), new Clear(), new FastForward(),
-                new Disconnect()};
+                new Summon(), new Disconnect()};
 
         musicManagers = new HashMap<>();
         musicChannels = new HashMap<>();
