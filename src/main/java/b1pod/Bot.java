@@ -32,7 +32,6 @@ public class Bot
                         new HypeManListener(),
                         new NASACommands(),
                         new Kanye(),
-                        new DumbStuff(),
                         new WikipediaSearch(),
                         new TagListener(),
                         new Help(),
