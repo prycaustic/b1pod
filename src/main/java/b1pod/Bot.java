@@ -21,7 +21,7 @@ public class Bot
     public static void main(String[] args) throws Exception
     {
         youtubeApiKey = args[1];
-        mySqlPassword = args[2];
+        //mySqlPassword = args[2];
         prefix = "b-";
         embedColor = 0xFFCB77;
 
@@ -29,16 +29,16 @@ public class Bot
                 .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_VOICE_STATES)
                 .addEventListeners(
                         new FilmCommand(),
-                        new HypeManListener(),
+                        //new HypeManListener(),
                         new NASACommands(),
                         new Kanye(),
                         new WikipediaSearch(),
-                        new TagListener(),
+                        //new TagListener(),
                         new Help(),
                         new Shutdown()
                 );
 
-        commandHandler = new CommandHandler(jda, new UserTags3())
+        commandHandler = new CommandHandler(jda)
                 .addCategories(new Music());
 
         jda.setActivity(Activity.listening("you cry"));

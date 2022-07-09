@@ -1,12 +1,16 @@
 package b1pod.commands.Music;
 
+import b1pod.core.ExecutionResult;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.managers.AudioManager;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -21,6 +25,9 @@ public class TrackScheduler extends AudioEventAdapter
     private final BlockingQueue<AudioTrack> queue;
     private boolean looping;
     private final Guild guild;
+    private final Timer disconnectTimer;
+
+    private TimerTask disconnectTask;
 
     /**
      * @param player The audio player this scheduler uses
@@ -31,6 +38,7 @@ public class TrackScheduler extends AudioEventAdapter
         this.guild = guild;
         this.queue = new LinkedBlockingQueue<>();
         this.looping = false;
+        this.disconnectTimer = new Timer();
     }
 
     /**
@@ -66,17 +74,41 @@ public class TrackScheduler extends AudioEventAdapter
                 .setColor(getEmbedColor());
 
         Music.getGuildMusicChannel(guild).sendMessageEmbeds(playingEmbed.build()).queue();
+
+        // Cancel the disconnect timer because a new song has started playing
+        if (disconnectTask != null) disconnectTask.cancel();
     }
 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         // Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)
-        if (endReason.mayStartNext)
+        if (!endReason.mayStartNext) return;
+
+        if (looping)
+            player.startTrack(track.makeClone(), false);
+        else
+            nextTrack();
+
+        // Start a timer if there is no track left in the queue
+        if (getQueue().isEmpty())
         {
-            if (looping)
-                player.startTrack(track.makeClone(), false);
-            else
-                nextTrack();
+            disconnectTask = new TimerTask() {
+                @Override
+                public void run() {
+                    AudioManager audioManager = guild.getAudioManager();
+
+                    if (!audioManager.isConnected()) return;
+
+                    audioManager.closeAudioConnection();
+                    EmbedBuilder disconnectEmbed = new EmbedBuilder()
+                            .setTitle("Disconnected from voice channel due to inactivity.")
+                            .setColor(getEmbedColor());
+
+                    Music.getGuildMusicChannel(guild).sendMessageEmbeds(disconnectEmbed.build()).queue();
+                }
+            };
+
+            disconnectTimer.schedule(disconnectTask, 5 * 60 * 1000);
         }
     }
 

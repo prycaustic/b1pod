@@ -87,7 +87,7 @@ public class Play extends Command
             @Override
             public void noMatches()
             {
-                message.reply("No results.").mentionRepliedUser(false).queue();
+                message.reply("YouTube search isn't working for some reason. Please use a link to play songs for now. - Andrei").mentionRepliedUser(false).queue();
             }
 
             @Override
@@ -126,7 +126,7 @@ public class Play extends Command
         try
         {
             HttpResponse<String> response = YoutubeAPIRequest(query);
-            assert response != null;
+            if (response == null) return null;
             JSONObject json = new JSONObject(response.body());
             JSONArray items = json.getJSONArray("items");
             String videoId = items.getJSONObject(0).getJSONObject("id").getString("videoId");
@@ -135,6 +135,7 @@ public class Play extends Command
         }
         catch (JSONException e)
         {
+            e.printStackTrace();
             return null;
         }
     }
@@ -156,6 +157,7 @@ public class Play extends Command
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             return null;
         }
     }
